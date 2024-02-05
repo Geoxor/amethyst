@@ -93,5 +93,21 @@
   "settings.import_export.title": "Tuo tai vie asetuksia",
   "settings.import_export.description": "Varmuuskopioi asetuksesi tiedostoon tai tuo olemassaolevat asetukset",
   "settings.import_export.import": "Tuo",
-  "settings.import_export.export": "Vie"
+  "settings.import_export.export": "Vie",
+  "route.queue": "Queue",
+  "route.favorites": "Favorites",
+  "route.audio_monitor": "Audio monitor",
+  "search.placeholder": "Search",
+  "settings.local_sources.title": "Local sources",
+  "settings.local_sources.description": "Add local folders to your Amethyst library, these will update whenever Amethyst detects file changes in these folders",
+  "settings.local_sources.add_folder": "Add folder",
+  "settings.local_sources.view": "View",
+  "settings.media_source_type.local_folder": "Local Folder",
+  "settings.font_weight.title": "Font weight",
+  "settings.font_weight.description": "How bold the font will be globally in the UI",
+  "settings.decibel_meter.smoothing_duration.title": "Smoothing duration",
+  "settings.decibel_meter.smoothing_duration.description": "Smoothly animate between data-frames (useful for smoothing out small FFT sizes that create jitter)",
+  "settings.reset.title": "Reset settings",
+  "settings.reset.description": "Reverts all settings to the factory default (can also help fix bug-stated clients)",
+  "settings.reset.reset": "Reset"
 }

@@ -1,5 +1,6 @@
-
 import {i18n} from "@/amethyst";
+import "@/tauri-utils";
+
 import App from "@/App.vue";
 import "virtual:windi-devtools";
 import "virtual:windi.css";

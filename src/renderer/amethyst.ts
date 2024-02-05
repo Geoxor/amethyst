@@ -16,11 +16,14 @@ import { router } from "./router";
 import "./logic/subsonic";
 import { createI18n } from "vue-i18n";
 import messages from "@intlify/unplugin-vue-i18n/messages";
+import { tauriUtils } from "@/tauri-utils";
+import { invoke } from "@tauri-apps/api/tauri";
+import { listen } from "@tauri-apps/api/event";
 import { useLocalStorage } from "@vueuse/core";
 
 export const i18n = createI18n({
   fallbackLocale: "en-US", // set fallback locale
-  locale: JSON.parse(localStorage.getItem("settings")!).language,
+  locale: localStorage.getItem("settings") !== null ? JSON.parse(localStorage.getItem("settings")!).language : "en-US",
   messages,
 });
 
@@ -33,27 +36,38 @@ export const favoriteTracks = useLocalStorage<string[]>("favoriteTracks", []);
  */
 class AmethystBackend {
   public constructor() {
+    if (AmethystBackend.isPlatformTauri) tauriUtils.init();
     console.log(`Current platform: ${this.getCurrentPlatform()}`);
     console.log(`Current operating system: ${this.getCurrentOperatingSystem()}`);
+    console.log(`Current Runtime: ${AmethystBackend.isPlatformTauri ? 'Tauri' : AmethystBackend.isPlatformMobile ? 'Mobile' : 'Electron' }`)
   }
 
   private static isPlatformMobile = Capacitor.isNativePlatform();
 
-  private static isPlatformDesktop = navigator.userAgent.indexOf("Electron") >= 0;
+  private static isPlatformTauri = window.__TAURI__ !== undefined; // check if "__TAURI__" is not undefined, then we are running through Tauri
+
+  private static isPlatformDesktop = navigator.userAgent.indexOf("Electron") >= 0 || AmethystBackend.isPlatformTauri;
 
   private static isPlatformWeb = !AmethystBackend.isPlatformMobile && !AmethystBackend.isPlatformDesktop;
 
-  private static isOperatingSystemLinux = this.isPlatformDesktop && window.electron.isLinux;
+  private static isOperatingSystemLinux = this.isPlatformDesktop && AmethystBackend.isPlatformTauri ? window.navigator.userAgent.indexOf("Linux") >= 0 : window.electron.isLinux;
 
-  private static isOperatingSystemWindows = this.isPlatformDesktop && window.electron.isWindows;
+  private static isOperatingSystemWindows = this.isPlatformDesktop && AmethystBackend.isPlatformTauri ? window.navigator.userAgent.indexOf("Windows") >= 0 : window.electron.isWindows;
 
-  private static isOperatingSystemMac = this.isPlatformDesktop && window.electron.isMac;
+  private static isOperatingSystemMac = this.isPlatformDesktop && AmethystBackend.isPlatformTauri ? window.navigator.userAgent.indexOf("Macintosh") >= 0 : window.electron.isMac;
 
   public getCurrentPlatform() {
     if (Amethyst.isPlatformDesktop) return "desktop"; // aka Electron
     if (Amethyst.isPlatformMobile) return "mobile"; // aka Capacitor
     if (Amethyst.isPlatformWeb) return "web"; // aka Webapp
     throw new Error("Unknown platform");
+  }
+
+  public getCurrentRuntime() {
+    if (Amethyst.isPlatformTauri) return "tauri";
+    if (Amethyst.isPlatformMobile) return "mobile";
+    if (Amethyst.isPlatformWeb) return "web";
+    return "electron";
   }
 
   public getCurrentOperatingSystem() {
@@ -77,8 +91,8 @@ class AmethystBackend {
   }
 
   public async openLink(url: string) {
-    switch (this.getCurrentPlatform()) {
-      case "desktop":
+    switch (this.getCurrentRuntime()) {
+      case "electron":
         return window.electron.ipcRenderer.invoke("open-external", [url]);
       case "web":
         const openLinkInNewTab = (url: string) => {
@@ -93,10 +107,23 @@ class AmethystBackend {
     }
   }
 
-  public async showItem(path: string) {
-    switch (this.getCurrentPlatform()) {
-      case "desktop":
+  public async showItem(path: string, showInExplorer: boolean = false) {
+    switch (this.getCurrentRuntime()) {
+      case "electron":
         return window.electron.ipcRenderer.invoke("show-item", [path]); 
+      case "tauri":
+        {
+          if (showInExplorer)
+          {
+            const { invoke } = await import("@tauri-apps/api/tauri");
+            return invoke('open_shell', { location: await tauriUtils.tauriGetRootDirectory(path) });
+          }
+          else
+          {
+            const { invoke } = await import("@tauri-apps/api/tauri");
+            return invoke('open_shell', { location: path });
+          }
+        }
       default:
         return Promise.reject();
     }
@@ -123,8 +150,8 @@ class AmethystBackend {
   }
 
   public async showOpenFileDialog(options?: Electron.OpenDialogOptions): Promise<OpenDialogReturnValue> {
-    switch (this.getCurrentPlatform()) {
-      case "desktop":
+    switch (this.getCurrentRuntime()) {
+      case "electron":
         return window.electron.ipcRenderer.invoke<OpenDialogReturnValue>("open-file-dialog", [options]);
       case "web":
         const fileInput = document.createElement("input");
@@ -150,33 +177,47 @@ class AmethystBackend {
           const path = result.files.map(file => file.path!)[0];
           path ? res({canceled: false, filePaths: [decodeURIComponent(path)]}) : rej();
         });
+      case "tauri":
+        const { invoke } = await import("@tauri-apps/api/tauri");
+        return await invoke('pick_file', {});
       default:
         return Promise.reject();
     }
   }
   
   public async showOpenFolderDialog() {
-    switch (this.getCurrentPlatform()) {
-      case "desktop":
+    switch (this.getCurrentRuntime()) {
+      case "electron":
         return window.electron.ipcRenderer.invoke<OpenDialogReturnValue>("open-folder-dialog");
+      case "tauri":
+        const { invoke } = await import("@tauri-apps/api/tauri");
+        return await invoke('pick_folder', {});
       default:
         return Promise.reject();
     }
   }
 
   public async showSaveFileDialog(options?: Electron.SaveDialogOptions) {
-    switch (this.getCurrentPlatform()) {
-      case "desktop":
+    switch (this.getCurrentRuntime()) {
+      case "electron":
         return window.electron.ipcRenderer.invoke<SaveDialogReturnValue>("show-save-dialog", [options]);
+      case "tauri":
+        const { save } = await import("@tauri-apps/api/dialog");
+        // @ts-ignore
+        return await save({ title: options?.title, filters: [{ name: 'Extension', extensions: options?.filters[0].extensions }] });
       default:
         return Promise.reject();
     }
   }
 
   public async writeFile(data: string | Buffer, path: string) {
-    switch (this.getCurrentPlatform()) {
-      case "desktop":
+    switch (this.getCurrentRuntime()) {
+      case "electron":
         return window.fs.writeFile(path, data);
+      case "tauri":
+        if (data instanceof Buffer)
+            return await tauriUtils.tauriWriteBuffer(path, data);
+          return await tauriUtils.tauriWrite(path, data);
       default:
         return Promise.reject();
     }
@@ -205,7 +246,7 @@ export class Amethyst extends AmethystBackend {
   public shortcuts: Shortcuts = new Shortcuts();
   public player = new Player();
   public mediaSession: MediaSession | undefined = this.getCurrentPlatform() === "desktop" ? new MediaSession(this.player) : undefined;
-  public mediaSourceManager: MediaSourceManager = new MediaSourceManager(this.player, this.store);
+  public mediaSourceManager: MediaSourceManager = new MediaSourceManager(this.player, this.store, this);
 
   public constructor() {
     super();
@@ -213,32 +254,83 @@ export class Amethyst extends AmethystBackend {
     document.body.style.zoom = this.store.settings.value.zoomLevel;
 
     if (this.getCurrentPlatform() === "desktop") {
-      window.electron.ipcRenderer.invoke<string>("get-appdata-path").then(path => this.APPDATA_PATH = path);
 
-      window.electron.ipcRenderer.on("maximize", () => this.store.state.isMaximized = true);
-      window.electron.ipcRenderer.on("unmaximize", () => this.store.state.isMaximized = false);
-      window.electron.ipcRenderer.on("minimize", () => this.store.state.isMinimized = true);
-      window.electron.ipcRenderer.on("focus", () => this.store.state.isFocused = true);
-      window.electron.ipcRenderer.on("unfocus", () => this.store.state.isFocused = false);
+      if (this.getCurrentRuntime() == 'electron')
+      {
+        window.electron.ipcRenderer.invoke<string>("get-appdata-path").then(path => this.APPDATA_PATH = path);
 
-      window.electron.ipcRenderer.on("update", () => this.store.state.updateReady = true);
+        window.electron.ipcRenderer.on("maximize", () => this.store.state.isMaximized = true);
+        window.electron.ipcRenderer.on("unmaximize", () => this.store.state.isMaximized = false);
+        window.electron.ipcRenderer.on("minimize", () => this.store.state.isMinimized = true);
+        window.electron.ipcRenderer.on("focus", () => this.store.state.isFocused = true);
+        window.electron.ipcRenderer.on("unfocus", () => this.store.state.isFocused = false);
 
-      window.electron.ipcRenderer.on<string>("play-file", path => path !== "--require" && amethyst.player.queue.add(path).then(() => {
-        amethyst.player.play(amethyst.player.queue.getList().findIndex(track => track.path == path));
-      }));
-      window.electron.ipcRenderer.on<(string)[]>("play-folder", paths => amethyst.player.queue.add(flattenArray(paths)));
+        window.electron.ipcRenderer.on("update", () => this.store.state.updateReady = true);
+
+        window.electron.ipcRenderer.on<string>("play-file", path => path !== "--require" && amethyst.player.queue.add(path).then(() => {
+          amethyst.player.play(amethyst.player.queue.getList().findIndex(track => track.path == path));
+        }));
+        window.electron.ipcRenderer.on<(string)[]>("play-folder", paths => amethyst.player.queue.add(flattenArray(paths)));
+      }
+
+      if (this.getCurrentRuntime() == 'tauri')
+      {
+        listen("open-file", (e) => {
+          amethyst.player.queue.add(e.payload.files);
+        });
+
+        listen("open-folder", async (e) => {
+          const entries = await tauriUtils.tauriReadFolder(e.payload.folder);
+          for (const entry of entries) {
+            amethyst.player.queue.add(entry.path);
+          }
+        });
+
+        listen("add-source", async (e) => {
+          await this.mediaSourceManager.addLocalSource();
+        });
+
+        listen("goto-settings", () => {
+          router.push({ name: 'settings.appearance' });
+        });
+    
+        listen("clear-queue", () => {
+          amethyst.player.queue.clear();
+        });
+    
+        listen("clear-error", () => {
+          amethyst.player.queue.clearErrored();
+        });
+    
+        listen("refresh-metadata", () => {
+          amethyst.player.queue.fetchAsyncData(true);
+        });
+
+        invoke('init_presence', {});
+        document.addEventListener('contextmenu', event => event.preventDefault());
+      }
   
       // #region move this to the discord plugin
       let richPresenceTimer: NodeJS.Timer | undefined;
 
-      const updateRichPresence = (track: Track) => {
-        const sendData = () => {
+      const updateRichPresence = async(track: Track) => {
+        const sendData = async () => {
         const args = [
           track.getArtistsFormatted() && track.getTitleFormatted() ? `${track.getArtistsFormatted()} - ${track.getTitleFormatted()}` : track.getFilename(),
             this.player.isPaused.value ? "Paused" : `${this.player.currentTimeFormatted(true)} - ${track.getDurationFormatted(true)}`,
             track.metadata.data?.format.container?.toLowerCase() || "unknown format"
           ];
-          window.electron.ipcRenderer.invoke("update-rich-presence", [args]);
+
+          const [title, time, format] = args;
+          if (this.getCurrentRuntime() == 'tauri')
+          {
+            const { invoke } = await import("@tauri-apps/api/tauri");
+            invoke('update_presence', {  title: title, time: time, format: format });
+          }
+          else
+          {
+            window.electron.ipcRenderer.invoke("update-rich-presence", [args]);
+          }
         };
 
         richPresenceTimer && clearInterval(richPresenceTimer);
@@ -248,7 +340,8 @@ export class Amethyst extends AmethystBackend {
 
       const updateWithCurrentTrack = () => {
         const currentTrack = this.player.getCurrentTrack();
-        currentTrack && updateRichPresence(currentTrack);
+        if (localStorage.getItem('settings') !== null ? JSON.parse(localStorage.getItem('settings')!).useDiscordRichPresence : true)
+          currentTrack && updateRichPresence(currentTrack);
       };
 
       if (this.store.settings.value.useDiscordRichPresence) {
@@ -263,6 +356,7 @@ export class Amethyst extends AmethystBackend {
       // #endregion
     }
 
+    // use this or runtime?
     if (this.getCurrentPlatform() === "mobile") {
       this.initMobile();
     }
@@ -289,7 +383,8 @@ export class Amethyst extends AmethystBackend {
   }
 
   public openDevTools() {
-    if (this.getCurrentPlatform() !== "desktop") return;
+    if (this.getCurrentPlatform() !== "desktop" && this.getCurrentRuntime() == 'tauri') return;
+
     window.electron.ipcRenderer.invoke("dev-tools");
   }
 
@@ -302,11 +397,13 @@ export class Amethyst extends AmethystBackend {
       filters: [{ name: "Amethyst Configuration File", extensions: ["acf"] }],
       defaultPath: "Amethyst Settings",
     });
-  
-    if (dialog?.canceled || !dialog.filePaths[0]) return;
-  
-    const loadedSettings = await fetch(dialog.filePaths[0]);
-    const parsedSettings = await loadedSettings.json();
+    
+    // @ts-expect-error
+    if (this.getCurrentRuntime() == 'tauri' ? !dialog[0] : dialog?.canceled || !dialog?.filePaths[0]) return;
+    
+    // @ts-ignore
+    const loadedSettings = this.getCurrentRuntime() == 'tauri' ? await tauriUtils.tauriFetch(dialog[1]) : await fetch(dialog.filePaths[0]);
+    const parsedSettings = this.getCurrentRuntime() == 'tauri' ? JSON.parse(loadedSettings) : await loadedSettings.json();
   
     Object.keys(amethyst.store.settings.value).forEach(key => {
       // @ts-ignore
@@ -319,9 +416,10 @@ export class Amethyst extends AmethystBackend {
       filters: [{ name: "Amethyst Configuration File", extensions: ["acf"] }],
       defaultPath: "Amethyst Settings"
     });
-    if (dialog?.canceled || !dialog?.filePath) return;
-  
-    return amethyst.writeFile(JSON.stringify(amethyst.store.settings.value, null, 2), dialog?.filePath);
+
+    if (this.getCurrentRuntime() == 'tauri' ? !dialog : dialog?.canceled || !dialog?.filePath) return;
+
+    return amethyst.writeFile(JSON.stringify(amethyst.store.settings.value, null, 2), this.getCurrentRuntime() == 'tauri' ? dialog : dialog?.filePath);
   };
 
   public resetSettings = () => {
@@ -360,7 +458,8 @@ export class Amethyst extends AmethystBackend {
 
   public performWindowAction(action: "close" | "maximize" | "unmaximize" | "minimize"): void {
     if (this.getCurrentPlatform() === "desktop") {
-      window.electron.ipcRenderer.invoke(action).then(() => this.syncWindowState());
+      if (this.getCurrentRuntime() !== 'tauri')
+        window.electron.ipcRenderer.invoke(action).then(() => this.syncWindowState());
     } else {
       throw new Error(`${this.performWindowAction.name} can only be executed when running in 'desktop' (electron) client`);
     }

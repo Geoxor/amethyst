@@ -102,5 +102,12 @@
   "settings.reset.title": "Einstellungen zurücksetzen",
   "settings.reset.description": "Setzt alle Einstellungen auf die Werkseinstellungen zurück (kann auch bei Fehlerbehebung helfen)",
   "settings.reset.reset": "Zurücksetzen",
-  "search.placeholder": "Suche"
+  "search.placeholder": "Suche",
+  "route.queue": "Queue",
+  "route.favorites": "Favorites",
+  "route.audio_monitor": "Audio monitor",
+  "settings.font_weight.title": "Font weight",
+  "settings.font_weight.description": "How bold the font will be globally in the UI",
+  "settings.decibel_meter.smoothing_duration.title": "Smoothing duration",
+  "settings.decibel_meter.smoothing_duration.description": "Smoothly animate between data-frames (useful for smoothing out small FFT sizes that create jitter)"
 }

@@ -27,7 +27,6 @@ onMounted(() => {
     if (fps.value < min.value) min.value = fps.value;
     domSize.value = countDomElements();
     amethyst.player.getLatency().then(l => latency.value = l);
-    // TODO: multiplatform support
     smoothTween(tweenedFps.value, fpsCounter.value, 1000, (tweenedNumber => tweenedFps.value = ~~tweenedNumber));
 
   }, 1000);
@@ -226,7 +225,7 @@ const commandOrControlSymbol = computed(() => amethyst.getCurrentOperatingSystem
       />
         
       <control-buttons
-        v-if="amethyst.getCurrentPlatform() === 'desktop' && amethyst.getCurrentOperatingSystem() != 'mac'"
+        v-if="amethyst.getCurrentPlatform() === 'desktop' && amethyst.getCurrentRuntime() !== 'tauri'"
         :is-maximized="state.state.isMaximized"
         @close="amethyst.performWindowAction('close')"
         @minimize="amethyst.performWindowAction('minimize')"

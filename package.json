@@ -13,6 +13,7 @@
   "description": "Amethyst is an Electron-based audio player with a node-based audio routing system, the main goal of this project is to make a music player in Typescript that has pro-level features as most DAWs / DAEs, while also providing useful tools and customizability to the end-user to deal with audio.",
   "scripts": {
     "dev": "concurrently -p none \"yarn start:main\" \"yarn start:renderer\" ",
+    "dev:tauri": "concurrently -p none \"yarn start:renderer\" ",
     "dev:android": "yarn build:renderer && concurrently -p none \"yarn start:renderer\" \"yarn cap run android\" ",
     "build": "concurrently -p none \"yarn build:main\" \"yarn build:renderer\" \"yarn gen:all\" && yarn cap sync",
     "build:main": "concurrently -p none \"tsc ./src/main/preload.ts\" \"tsc -p ./src/main/tsconfig.json\" ",
@@ -335,6 +336,8 @@
     "@floating-ui/dom": "^1.2.7",
     "@intlify/unplugin-vue-i18n": "^1.6.0",
     "@supercharge/promise-pool": "^2.4.0",
+    "@tauri-apps/api": "^1.5.2",
+    "@three-ts/orbit-controls": "^1.4.7",
     "@vue-flow/additional-components": "^1.3.3",
     "@vue-flow/core": "^1.19.2",
     "@vueform/slider": "^2.1.9",

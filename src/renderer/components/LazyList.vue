@@ -25,7 +25,7 @@ const handleContextMenu = ({x, y}: MouseEvent, track: Track) => {
           extension: "dfpwm"
       });
     }},
-    { title: "Show in Explorer...", icon: AmethystIcon, action: () => amethyst.showItem(track.path) },
+    { title: "Show in Explorer...", icon: AmethystIcon, action: () => amethyst.showItem(track.path, true) },
     { title: "Export cover...", icon: AmethystIcon, action: () => track.exportCover() },
     { title: "Reload metadata", icon: AmethystIcon, action: () => track.fetchAsyncData(true) },
     { title: "Remove from queue", icon: AmethystIcon, red: true, action: () => amethyst.player.queue.remove(track) },
@@ -84,7 +84,7 @@ const handleContextMenu = ({x, y}: MouseEvent, track: Track) => {
           class="row"
           @contextmenu="handleContextMenu($event, item)"
           @keypress.prevent
-          @click="isHoldingControl ? amethyst.showItem(item.path) : amethyst.player.play(item)"
+          @click="isHoldingControl ? amethyst.showItem(item.path, true) : amethyst.player.play(item)"
         >
           <div
             class="td max-w-5"

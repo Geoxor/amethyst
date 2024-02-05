@@ -109,7 +109,7 @@ const isCurrentTrackFavorited = computed(() => amethyst.player.getCurrentTrack()
         <div class="flex flex-col w-full py-1 font-bold gap-1 ">
           <h1
             class="text-13px hover:underline cursor-pointer overflow-hidden text-text_title overflow-ellipsis"
-            @click=" amethyst.showItem(amethyst.player.getCurrentTrack()?.path!)"
+            @click=" amethyst.showItem(amethyst.player.getCurrentTrack()?.path!, true)"
           >
             {{ amethyst.player.getCurrentTrack()?.getTitleFormatted() }}
           </h1>

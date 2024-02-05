@@ -203,9 +203,10 @@ const handleSaveFile = async () => {
     filters: [{ name: "Amethyst Node Graph", extensions: ["ang"] }],
     defaultPath: amethyst.player.nodeManager.graphName.value || "untitled"
   });
-  if (dialog?.canceled || !dialog?.filePath) return;
 
-  return amethyst.writeFile(serializedGraph, dialog?.filePath);
+  if (amethyst.getCurrentRuntime() == 'tauri' ? dialog == null : dialog?.canceled || !dialog?.filePath) return;
+
+  return amethyst.writeFile(serializedGraph, dialog);
 };
 
 const handleReset = () => {

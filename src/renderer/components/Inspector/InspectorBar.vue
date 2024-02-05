@@ -142,7 +142,7 @@ onUnmounted(() => {
         </li>
         <button
           class="cursor-pointer"
-          @click="amethyst.showItem(currentItem.path)"
+          @click="amethyst.showItem(currentItem.path, true)"
         >
           Show in explorer
           <AmethystIcon />
@@ -201,7 +201,7 @@ onUnmounted(() => {
         </li>
         <button
           class="cursor-pointer"
-          @click="amethyst.showItem(currentItem.getCachePath())"
+          @click="amethyst.showItem(currentItem.getCachePath(), true)"
         >
           Show .amf
           <AmethystIcon />

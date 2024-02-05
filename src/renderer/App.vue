@@ -23,7 +23,7 @@ const setAmbientCover = async (track: Track) => {
   track.getCoverAsBlob().then(blob => ambientBackgroundImage.value = URL.createObjectURL(blob));
 };
 
-onMounted(() => {
+onMounted(async () => {
   amethyst.player.on("play", setAmbientCover);
 });
 
@@ -89,7 +89,7 @@ onUnmounted(() => {
         class="duration-user-defined underline cursor-pointer hover:text-primary-800"
       >download the native app</strong> </a> 
     </div>
-    <top-bar v-if="amethyst.getCurrentPlatform() === 'desktop'" />
+    <top-bar v-if="amethyst.getCurrentPlatform() === 'desktop' && amethyst.getCurrentOperatingSystem() !== 'mac'" />
     <context-menu v-if="useContextMenu().state.isVisible" />
     <div
       v-if="amethyst.getCurrentPlatform() === 'mobile'"

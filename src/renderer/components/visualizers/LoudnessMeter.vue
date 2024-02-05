@@ -18,7 +18,7 @@ const
   shortTermMax = ref(MINIMUM_LUFS),
   integratedMax = ref(MINIMUM_LUFS);
 
-onMounted(() => {
+onMounted(async () => {
 
   const loudnessMeter = new LoudnessMeter({
     source: props.node,
@@ -64,6 +64,7 @@ onMounted(() => {
     shortTermMax.value = MINIMUM_LUFS;
     integratedMax.value = MINIMUM_LUFS;
   });
+  
   amethyst.player.on("pause", () => loudnessMeter.pause());
 });
 

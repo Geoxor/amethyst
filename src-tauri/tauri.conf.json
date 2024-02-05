@@ -1,0 +1,80 @@
+{
+  "build": {
+    "beforeBuildCommand": "yarn build:renderer",
+    "beforeDevCommand": "yarn dev:tauri",
+    "devPath": "http://localhost:6969",
+    "distDir": "../release/dist/renderer"
+  },
+  "package": {
+    "productName": "Amethyst",
+    "version": "2.0.0-dev"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "os": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": ["**"]
+      },
+      "path": {
+        "all": true
+      },
+      "protocol": {
+        "all": true,
+        "asset": true,
+        "assetScope": ["**"]
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "Music",
+      "copyright": "© 2023 Geoxor",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
+      "icon": [
+        "../assets/icon.icns",
+        "../assets/icon.ico"
+      ],
+      "identifier": "com.github.amethyst",
+      "longDescription": "",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [],
+      "shortDescription": "",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": "default-src 'self' blob: data: asset:; media-src 'self' blob: data: asset: https://asset.localhost; img-src 'self' asset: blob: data:;"
+    },
+    "updater": {
+      "active": false
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 720,
+        "resizable": true,
+        "title": "Amethyst",
+        "width": 1280
+      }
+    ]
+  }
+}

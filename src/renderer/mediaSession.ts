@@ -27,7 +27,7 @@ export class MediaSession {
     this.player.on("play", async track => {
       const cover = (await track.fetchMetadata(true))?.common.picture?.[0];
       const coverUrl: string = await track.getCover() ?? "";
-
+  
       navigator.mediaSession.metadata = new MediaMetadata({
         title: track.getTitleFormatted(),
         artist: track.getArtistsFormatted(),

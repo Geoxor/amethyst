@@ -1046,6 +1046,18 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@tauri-apps/api@^1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.5.2.tgz#e92880d3435c8f46a7a152de226f014ec1f224b5"
+  integrity sha512-tZK3XJiIUnUdHN7rGqA+j57dvT3/7z2bEiPfWmO3uAymv2JMBJrfGwbyDWLjGue37UVhh0gLYSkA9wV+/bASwA==
+
+"@three-ts/orbit-controls@^1.4.7":
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/@three-ts/orbit-controls/-/orbit-controls-1.4.7.tgz#5bfda19bfb148ac0e494bd2ae8e9e5fcf640fa2a"
+  integrity sha512-1OVZnc2VTHCoHberL50LBbltjnqVpOBhmuJwKPqzn6sThQwvVU1E13cpuJ2SWWOMoMLF+4hE3ICi4KHsZA/CJw==
+  dependencies:
+    three "^0.126.1"
+
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
@@ -6867,6 +6879,11 @@ thenify-all@^1.0.0:
   integrity sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==
   dependencies:
     any-promise "^1.0.0"
+
+three@^0.126.1:
+  version "0.126.1"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.126.1.tgz#cf4e4e52060fd952f6f0d5440cbd422c66bc4be7"
+  integrity sha512-eOEXnZeE1FDV0XgL1u08auIP13jxdN9LQBAEmlErYzMxtIIfuGIAZbijOyookALUhqVzVOx0Tywj6n192VM+nQ==
 
 three@^0.152.1:
   version "0.152.2"
