@@ -334,7 +334,7 @@
     "@capacitor/local-notifications": "^4.1.5",
     "@capacitor/splash-screen": "^4.2.0",
     "@capacitor/status-bar": "^4.1.1",
-    "@capawesome-team/capacitor-file-opener": "^5.0.0",
+    "@capawesome-team/capacitor-file-opener": "^5.0.4",
     "@capawesome/capacitor-file-picker": "^5.0.0",
     "@domchristie/needles": "^0.0.2-1",
     "@floating-ui/core": "^1.2.6",

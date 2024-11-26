@@ -267,10 +267,10 @@
   resolved "https://registry.yarnpkg.com/@capacitor/status-bar/-/status-bar-4.1.1.tgz#5b9a1acbe5efb30158e35be7a5ef7ffaaadaf804"
   integrity sha512-3wosxMD1XuIFz88+c2GdVEHSJV6u7suOeKQjyWf3zf9eFr622Sg+udZqDbC0dtTWXw97BWyCjv3r1EYJw7XnIA==
 
-"@capawesome-team/capacitor-file-opener@^5.0.0":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@capawesome-team/capacitor-file-opener/-/capacitor-file-opener-5.0.3.tgz#0c393ed2901767691289fe03641e7da7379a628a"
-  integrity sha512-0DyGYYoFwjEYoj/diShfmV+mg5tteuYYk5K56pbJE5S63UE6eYiQBkNCLtuHHExsaZ06yBXzTOwun3/BTv/bNA==
+"@capawesome-team/capacitor-file-opener@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@capawesome-team/capacitor-file-opener/-/capacitor-file-opener-5.0.4.tgz#3c5ca65ec0380fba39720ce5e12946bcc3576c96"
+  integrity sha512-l5jOFIos3QJJNg8bI1T7Vqi3cKUMsN2jOap8vTzbxuAqOO5J/5ECQrD77W7X50F7nTYQB/6LPy1BUO3oTCLmHA==
 
 "@capawesome/capacitor-file-picker@^5.0.0":
   version "5.1.0"
