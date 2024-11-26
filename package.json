@@ -284,7 +284,7 @@
     "@types/ip": "^1.1.0",
     "@types/mime-types": "^2.1.1",
     "@types/node": "^18.16.2",
-    "@types/pako": "^2.0.0",
+    "@types/pako": "^2.0.3",
     "@types/pidusage": "^2.0.2",
     "@types/sharp": "^0.31.1",
     "@types/source-map-support": "^0.5.6",
