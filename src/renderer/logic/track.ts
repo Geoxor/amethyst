@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { bytesToHuman, secondsToColinHuman, secondsToHuman } from "@shared/formating";
+import { bytesToHuman, secondsToColinHuman, secondsToHuman, bitrateToHuman } from "@shared/formating";
 import { IMetadata, LoadState, LoadStatus } from "@shared/types";
 import * as mm from "music-metadata-browser";
 import FileSaver from "file-saver";
@@ -237,6 +237,10 @@ export class Track {
    */
   public getFilesizeFormatted(){
     return bytesToHuman(this.getMetadata()?.size || 0);
+  }
+
+  public getBitrateFormatted(){
+    return bitrateToHuman(this.getMetadata()?.format.bitrate || 0);
   }
 
   /**

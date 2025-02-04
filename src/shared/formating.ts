@@ -9,6 +9,12 @@ export const bytesToHuman = (bytes: number): string => {
   return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
 };
 
+export const bitrateToHuman = (bitrate: number): string => {
+  if (bitrate === 0)
+    return "0";
+  return `${Math.round(bitrate / 1000)} Kbps`;
+};
+
 // Turns seconds from 80 to 1:20
 export const secondsToHuman = (time: number): string => {
   return prettyMilliseconds(time * 1000,{secondsDecimalDigits: 0});

@@ -38,14 +38,7 @@ onUnmounted(() => {
     <route-header :title="$t('route.queue')">
       <search-input v-model="filterText" />
     </route-header>
-
-    <base-toolbar-button
-      class="absolute bottom-2 right-4.5 z-10 "
-      :icon="AmethystIcon"
-      :active="state.settings.value.followQueue"
-      @click="state.settings.value.followQueue = !state.settings.value.followQueue;"
-    /> 
-
+    
     <lazy-list
       :key="filterText.length"
       :tracks="amethyst.player.queue.search(filterText)"

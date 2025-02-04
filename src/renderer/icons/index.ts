@@ -63,6 +63,7 @@ import ShuffleIcon from "./playback/ShuffleIcon.vue";
 import RepeatNoneIcon from "./playback/RepeatNoneIcon.vue";
 import RepeatOneIcon from "./playback/RepeatOneIcon.vue";
 import RepeatAllIcon from "./playback/RepeatAllIcon.vue";
+import NotPlayingIcon from "./playback/NotPlayingIcon.vue";
 
 export {
   AddIcon,
@@ -128,4 +129,5 @@ export {
   RepeatNoneIcon,
   RepeatOneIcon,
   RepeatAllIcon,
+  NotPlayingIcon
 };
